@@ -78,7 +78,7 @@ items:
     owner: "Оркестратор"
     review: "Sonnet medium"
     plan: {start: 2026-11-03, end: 2026-11-05}
-    fact: {1: "В работе"}
+    fact: {1: "Выполнено"}
   - id: "0.4"
     title: "Правила процесса: CLAUDE.md, CONTRIBUTING.md, DoR/DoD, шаблоны (задание, ревью, ADR, ВН-xx)"
     owner: "Оркестратор"
@@ -96,7 +96,7 @@ items:
     owner: "Оркестратор"
     review: "Sonnet medium"
     plan: {start: 2026-11-04, end: 2026-11-06}
-    fact: {1: "В работе"}
+    fact: {1: "Выполнено"}
   - id: "0.7"
     title: "Ворота этапа 0; развилки Р-0, Р-6, Р-8"
     owner: "Оркестратор"
@@ -562,6 +562,11 @@ history:
     item: "0.6"
     what: "Общий граф REA: удалены дубли из CONTROL_src_help/rk45 (8332 → 4545 узлов), 12 документов переизвлечены; висячих рёбер нет"
     who: "Sonnet 5.5 / medium (graphify); проверка — оркестратор"
+  - date: 2026-11-02
+    item: "0.6"
+    what: "Отдельный граф tau3-ng: 304 узла, 603 ребра, 11 сообществ; query «ROADMAP» находит ROADMAP/DECISIONS/JOURNAL"
+    who: "Sonnet 5.5 / medium (graphify); проверка — оркестратор"
+    tokens: 287453
 
 reviews:
   - id: "R-0.2-1"

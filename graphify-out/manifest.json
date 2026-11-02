@@ -1,0 +1,176 @@
+{
+  "docs/tracker/tracker.yaml": {
+    "mtime": 1793650437.791945,
+    "seen": 1793650808.4372685,
+    "ast_hash": "5c4205fa4db5f2c3386be3443fabc6fd",
+    "semantic_hash": "5c4205fa4db5f2c3386be3443fabc6fd"
+  },
+  "tools/check_links.py": {
+    "mtime": 1793572852.426794,
+    "seen": 1793650808.4372742,
+    "ast_hash": "8619bc5ad0fef1da5f44bb6a02211c05",
+    "semantic_hash": "8619bc5ad0fef1da5f44bb6a02211c05"
+  },
+  "tools/tracker.py": {
+    "mtime": 1793573051.9644153,
+    "seen": 1793650808.4372766,
+    "ast_hash": "41a43eb556bdb6d5ffc2cb2330dcf2f2",
+    "semantic_hash": "41a43eb556bdb6d5ffc2cb2330dcf2f2"
+  },
+  "CHANGELOG.md": {
+    "mtime": 1793572197.7870283,
+    "seen": 1793650808.4372783,
+    "ast_hash": "669d16b4ee8c89ff85ecc62b6929022b",
+    "semantic_hash": "669d16b4ee8c89ff85ecc62b6929022b"
+  },
+  "CLAUDE.md": {
+    "mtime": 1793650457.7316816,
+    "seen": 1793650808.4372795,
+    "ast_hash": "d6c51f3dd6528755e6513160f6cb43bc",
+    "semantic_hash": "d6c51f3dd6528755e6513160f6cb43bc"
+  },
+  "CONTRIBUTING.md": {
+    "mtime": 1793572852.3873875,
+    "seen": 1793650808.4372804,
+    "ast_hash": "126df387ef2924dae013db22eddfb72c",
+    "semantic_hash": "126df387ef2924dae013db22eddfb72c"
+  },
+  "README.md": {
+    "mtime": 1793572197.68176,
+    "seen": 1793650808.4372818,
+    "ast_hash": "ec18989c3d9c9d4df5e643c9745c97d3",
+    "semantic_hash": "ec18989c3d9c9d4df5e643c9745c97d3"
+  },
+  "docs/DECISIONS.md": {
+    "mtime": 1793572809.2089279,
+    "seen": 1793650808.4372828,
+    "ast_hash": "2d70a4331c49acf0dda8abf4a592956b",
+    "semantic_hash": "2d70a4331c49acf0dda8abf4a592956b"
+  },
+  "docs/ISSUES.md": {
+    "mtime": 1793650457.590053,
+    "seen": 1793650808.4372838,
+    "ast_hash": "0ac4a83a17c77325d08e748d4949ee79",
+    "semantic_hash": "0ac4a83a17c77325d08e748d4949ee79"
+  },
+  "docs/PROCESS.md": {
+    "mtime": 1793572733.7659435,
+    "seen": 1793650808.437285,
+    "ast_hash": "b94c9bcdd2351578de5439e5fa6049ad",
+    "semantic_hash": "b94c9bcdd2351578de5439e5fa6049ad"
+  },
+  "docs/ROADMAP.md": {
+    "mtime": 1793572971.7760017,
+    "seen": 1793650808.437286,
+    "ast_hash": "517258ea556436d11a33f6a5018c2797",
+    "semantic_hash": "517258ea556436d11a33f6a5018c2797"
+  },
+  "docs/glossary.md": {
+    "mtime": 1793572971.8190627,
+    "seen": 1793650808.437287,
+    "ast_hash": "4a54eaf9eef532f3d3abaff333ed5314",
+    "semantic_hash": "4a54eaf9eef532f3d3abaff333ed5314"
+  },
+  "docs/history/JOURNAL.md": {
+    "mtime": 1793650457.6686041,
+    "seen": 1793650808.4372883,
+    "ast_hash": "5e659d29b7776f50f4c3ee33b5c1dc55",
+    "semantic_hash": "5e659d29b7776f50f4c3ee33b5c1dc55"
+  },
+  "docs/reviews/RV-0.2-1.md": {
+    "mtime": 1793572749.0909905,
+    "seen": 1793650808.4372892,
+    "ast_hash": "7febb3c8da37803ee15ff3bb87f3f350",
+    "semantic_hash": "7febb3c8da37803ee15ff3bb87f3f350"
+  },
+  "docs/reviews/RV-0.2-2.md": {
+    "mtime": 1793572788.0897255,
+    "seen": 1793650808.4372902,
+    "ast_hash": "9d963d8ac5081d9cdad4856d2c798e51",
+    "semantic_hash": "9d963d8ac5081d9cdad4856d2c798e51"
+  },
+  "docs/reviews/RV-0.4-1.md": {
+    "mtime": 1793572749.1085405,
+    "seen": 1793650808.4372911,
+    "ast_hash": "78002d8a28269bf968a6f97e03f6b1c6",
+    "semantic_hash": "78002d8a28269bf968a6f97e03f6b1c6"
+  },
+  "docs/reviews/RV-0.4-2.md": {
+    "mtime": 1793572943.7481234,
+    "seen": 1793650808.4372923,
+    "ast_hash": "ed686c8d2d5574cc5ae09c010c6dfacc",
+    "semantic_hash": "ed686c8d2d5574cc5ae09c010c6dfacc"
+  },
+  "docs/reviews/RV-0.5-1.md": {
+    "mtime": 1793572789.3449435,
+    "seen": 1793650808.4372935,
+    "ast_hash": "3f0f1dc292061004ec32c57a204ab3e1",
+    "semantic_hash": "3f0f1dc292061004ec32c57a204ab3e1"
+  },
+  "docs/reviews/RV-0.5-2.md": {
+    "mtime": 1793650379.6444468,
+    "seen": 1793650808.4372945,
+    "ast_hash": "26642f6a5fd5750a3495318d5a34367b",
+    "semantic_hash": "26642f6a5fd5750a3495318d5a34367b"
+  },
+  "docs/risks.md": {
+    "mtime": 1793572971.8572223,
+    "seen": 1793650808.4372957,
+    "ast_hash": "7f06a65cbceb6e01f82a5574da98c7aa",
+    "semantic_hash": "7f06a65cbceb6e01f82a5574da98c7aa"
+  },
+  "docs/templates/adr.md": {
+    "mtime": 1793572160.107798,
+    "seen": 1793650808.4372969,
+    "ast_hash": "659be53886a8bb7cabc2da0d1472e95c",
+    "semantic_hash": "659be53886a8bb7cabc2da0d1472e95c"
+  },
+  "docs/templates/brief.md": {
+    "mtime": 1793572852.2794147,
+    "seen": 1793650808.4372978,
+    "ast_hash": "21e3a62f026eb91547e3d8af069e3ae7",
+    "semantic_hash": "21e3a62f026eb91547e3d8af069e3ae7"
+  },
+  "docs/templates/external-request.md": {
+    "mtime": 1793572160.276257,
+    "seen": 1793650808.4372993,
+    "ast_hash": "2c842c12496dc427ec784e9ebbfd3a69",
+    "semantic_hash": "2c842c12496dc427ec784e9ebbfd3a69"
+  },
+  "docs/templates/journal-entry.md": {
+    "mtime": 1793572852.2423718,
+    "seen": 1793650808.4373002,
+    "ast_hash": "2a979f35d42ba42b31358ca4baf2ddd4",
+    "semantic_hash": "2a979f35d42ba42b31358ca4baf2ddd4"
+  },
+  "docs/templates/requirement.md": {
+    "mtime": 1793572160.1578798,
+    "seen": 1793650808.4373014,
+    "ast_hash": "3c88e95ecfbbe09e52d7da2452eb6386",
+    "semantic_hash": "3c88e95ecfbbe09e52d7da2452eb6386"
+  },
+  "docs/templates/review-report.md": {
+    "mtime": 1793572852.1814096,
+    "seen": 1793650808.4373024,
+    "ast_hash": "599ee3229dc90eb3d4066f2d804a0e4c",
+    "semantic_hash": "599ee3229dc90eb3d4066f2d804a0e4c"
+  },
+  "docs/templates/test-case.md": {
+    "mtime": 1793572160.217709,
+    "seen": 1793650808.4373038,
+    "ast_hash": "ffdce85e24ad61f1df3f39fbac73815f",
+    "semantic_hash": "ffdce85e24ad61f1df3f39fbac73815f"
+  },
+  "docs/tracker/README.md": {
+    "mtime": 1793650082.4925635,
+    "seen": 1793650808.4373045,
+    "ast_hash": "efcd5e5a4d60807d111ad3d1fb2779fe",
+    "semantic_hash": "efcd5e5a4d60807d111ad3d1fb2779fe"
+  },
+  "tools/requirements.txt": {
+    "mtime": 1793650082.926107,
+    "seen": 1793650808.437306,
+    "ast_hash": "ba638374f0695534f2316074c5eda0e2",
+    "semantic_hash": "ba638374f0695534f2316074c5eda0e2"
+  }
+}
