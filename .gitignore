@@ -25,3 +25,7 @@ topic[0-9][0-9][0-9].txt
 # Копии и временные файлы графика работ
 docs/tracker/.backup/
 docs/tracker/.tmp_*
+
+# Локальные пути графа на машине автора
+graphify-out/.graphify_python
+graphify-out/.graphify_root
