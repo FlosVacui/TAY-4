@@ -1,6 +1,6 @@
-# Учёт проекта «ТАУ-3 NG»
+# Учёт проекта «ТАУ-4»
 
-Источник правды — `docs/tracker/tracker.yaml`. Excel `ТАУ-3_NG_график.xlsx` из него генерируется
+Источник правды — `docs/tracker/tracker.yaml`. Excel `ТАУ-4_график.xlsx` из него генерируется
 скриптом `tools/tracker.py`. Excel и YAML пишет только оркестратор.
 
 Нужен Python 3 с `openpyxl` и `PyYAML` (`pip install -r tools/requirements.txt`). Команды — из корня репозитория.

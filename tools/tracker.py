@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Учёт проекта «ТАУ-3 NG»: tracker.yaml -> Excel-график (и обратно: заметки пользователя).
+"""Учёт проекта «ТАУ-4»: tracker.yaml -> Excel-график (и обратно: заметки пользователя).
 
 Источник правды - docs/tracker/tracker.yaml. Excel генерируется командой build.
 Команды: build, sync, add, mark, log, review, review-status, decision.
@@ -23,7 +23,7 @@ from openpyxl.utils import get_column_letter
 
 ROOT = Path(__file__).resolve().parent.parent
 DEF_YAML = ROOT / "docs" / "tracker" / "tracker.yaml"
-DEF_XLSX = ROOT / "docs" / "tracker" / "ТАУ-3_NG_график.xlsx"
+DEF_XLSX = ROOT / "docs" / "tracker" / "ТАУ-4_график.xlsx"
 
 # ----------------------------------------------------------------- константы
 # статус -> (цвет заливки, цвет текста, пояснение)
@@ -50,8 +50,8 @@ SNAP_SHEET = "_snapshot"
 
 DEFAULT_HEADER = """\
 # ============================================================================
-# ТАУ-3 NG - учёт проекта. ИСТОЧНИК ПРАВДЫ для Excel-графика.
-# Excel (docs/tracker/ТАУ-3_NG_график.xlsx) собирается командой:
+# ТАУ-4 - учёт проекта. ИСТОЧНИК ПРАВДЫ для Excel-графика.
+# Excel (docs/tracker/ТАУ-4_график.xlsx) собирается командой:
 #     python tools/tracker.py build
 # Правьте этот файл (руками или командами tracker.py add/mark/log/...), а не Excel.
 # Исключение: колонка «Комментарий» листа «График» и колонки «Решение пользователя» /
@@ -149,7 +149,7 @@ def extract_header(text):
 def normalize(data):
     if not isinstance(data, dict):
         raise TrackerError("tracker.yaml: корень должен быть словарём")
-    data.setdefault("project", "ТАУ-3 NG")
+    data.setdefault("project", "ТАУ-4")
     data["start_monday"] = to_date(data.get("start_monday"))
     if data["start_monday"] is None:
         raise TrackerError("tracker.yaml: не задан start_monday")
@@ -1212,13 +1212,13 @@ def cmd_parity_set(args):
 def make_parser():
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--yaml", help="путь к tracker.yaml (по умолчанию docs/tracker/tracker.yaml; env TRACKER_YAML)")
-    common.add_argument("--out", help="путь к xlsx (по умолчанию docs/tracker/ТАУ-3_NG_график.xlsx; env TRACKER_XLSX)")
+    common.add_argument("--out", help="путь к xlsx (по умолчанию docs/tracker/ТАУ-4_график.xlsx; env TRACKER_XLSX)")
     chg = argparse.ArgumentParser(add_help=False, parents=[common])
     chg.add_argument("--no-build", action="store_true", help="только записать YAML, Excel не пересобирать")
 
     p = argparse.ArgumentParser(
         prog="tracker.py",
-        description="Учёт проекта «ТАУ-3 NG»: tracker.yaml -> Excel-график. Источник правды - YAML.")
+        description="Учёт проекта «ТАУ-4»: tracker.yaml -> Excel-график. Источник правды - YAML.")
     sub = p.add_subparsers(dest="cmd", required=True, metavar="команда")
 
     s = sub.add_parser("build", parents=[common], help="собрать Excel из tracker.yaml (атомарно)")
