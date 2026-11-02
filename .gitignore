@@ -1,0 +1,27 @@
+# Сборка и кэш
+target/
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.venv/
+
+# Временные файлы Office (замок открытого файла)
+~$*
+
+# Граф: кэш не храним
+graphify-out/cache/
+
+# Материалы оригинала ТАУ-3 в публичный репозиторий не кладём (Р-6, CONTRIBUTING.md)
+*.HLP
+*.hlp
+*.exe
+local/
+decomp/
+shots/
+*_orig.png
+topic[0-9][0-9][0-9].txt
+
+# Копии и временные файлы графика работ
+docs/tracker/.backup/
+docs/tracker/.tmp_*

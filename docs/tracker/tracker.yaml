@@ -1,0 +1,882 @@
+# ============================================================================
+# ТАУ-3 NG - учёт проекта. ИСТОЧНИК ПРАВДЫ для Excel-графика.
+# Excel (docs/tracker/ТАУ-3_NG_график.xlsx) собирается командой:
+#     python tools/tracker.py build
+# Правьте этот файл (руками или командами tracker.py add/mark/log/...), а не Excel.
+# Исключение: колонка «Комментарий» листа «График» и колонки «Решение пользователя» /
+# «Дата решения» листа «Решения» - их можно писать в Excel; `tracker.py sync` (и любая сборка) вернёт их сюда.
+#
+# Структура файла (ключи верхнего уровня):
+#   project        название проекта (строка)
+#   start_monday   понедельник 1-й недели сетки (дата; 2026-11-02)
+#   grid_end       (необязательно) последняя дата сетки; по умолчанию 2027-04-30.
+#                  Сетка сама расширяется, если план или факт выходят за неё.
+#   calendar       календарь: holidays - праздники, session - сессия;
+#                  списки пар [начало, конец] (включительно), недели закрашиваются в «Графике»
+#   items          пункты графика (см. ниже)
+#   history        записи листа «История»
+#   reviews        замечания ревью (лист «Ревью»)
+#   decisions      развилки Р-x (лист «Решения»)
+#   parity         строки «Паритета» (заполняются на подэтапе 1.1)
+#   roles          таблица ролей (лист «Легенда»)
+#   external_requests  запросы во внешние нейросети ВН-xx (лист «Легенда»)
+#
+# items - список пунктов в порядке показа:
+#   id         номер: "0" (этап), "1.2" (подэтап), "9.2.1" (глубже); всегда в кавычках
+#   title      короткое название (до ~90 символов)
+#   stage      true для строки этапа (жирная, серая; план и сроки берутся из подэтапов)
+#   owner      исполнитель: роль (модель / effort)
+#   review     ревью: кто проверяет
+#   plan       {start: дата, end: дата} - плановые даты; недели выводятся из них
+#   fact       {номер недели: статус} - факт по неделям. Статусы: План, В работе,
+#              Выполнено, Доработка, Ждёт решения
+#   fact_dates (необязательно) {start, end} - точные даты факта вместо границ недель
+#   comment    заметка (синхронизируется с колонкой «Комментарий» Excel)
+#   Правило клетки недели: есть факт - показываем его; иначе неделя внутри плана - «План»;
+#   иначе пусто (с календарной подсветкой).
+# Пустые поля в файле не пишутся. Комментарии внутри данных при перезаписи командами
+# не сохраняются (этот заголовок сохраняется) - пишите заметки в поле comment.
+#
+# history:   {date, item, what, who, commit, rounds, tokens, link}
+# reviews:   {id, item, round, severity, text, repro, by, status, comment}
+#            severity: блокирующее | существенное | незначительное | предложение
+#            status:   открыто | исправлено | отложено | отклонено
+# decisions: {id, question, options, recommendation, deadline, default, answer, answer_date}
+# parity:    {id, area, behavior, source, delphi, fr, item, state, test}
+#            state: не начато | сделано | проверено
+# ============================================================================
+
+project: "ТАУ-3 NG — CONTROL"
+start_monday: 2026-11-02
+
+calendar:
+  holidays:
+    - [2026-12-31, 2027-01-10]
+  session:
+    - [2027-01-11, 2027-01-31]
+
+items:
+
+  - id: "0"
+    title: "Этап 0. Порядок и инфраструктура процесса"
+    stage: true
+  - id: "0.1"
+    title: "Delphi: коммит путей, починка runclone.sh, метка v2-delphi-final, ветка oracle"
+    owner: "Оркестратор"
+    review: "Sonnet medium"
+    plan: {start: 2026-11-03, end: 2026-11-03}
+    fact: {1: "Выполнено"}
+    fact_dates: {start: 2026-11-02, end: 2026-11-02}
+  - id: "0.2"
+    title: "Переписать мешающие документы (PLAN, ROADMAP, HANDOFF, README, errata, память)"
+    owner: "Sonnet medium"
+    review: "Sonnet medium"
+    plan: {start: 2026-11-03, end: 2026-11-05}
+    fact: {1: "Выполнено"}
+  - id: "0.3"
+    title: "Репозиторий tau3-ng: каркас, README, .gitattributes, лицензия (Р-6)"
+    owner: "Оркестратор"
+    review: "Sonnet medium"
+    plan: {start: 2026-11-03, end: 2026-11-05}
+    fact: {1: "В работе"}
+  - id: "0.4"
+    title: "Правила процесса: CLAUDE.md, CONTRIBUTING.md, DoR/DoD, шаблоны (задание, ревью, ADR, ВН-xx)"
+    owner: "Оркестратор"
+    review: "Sonnet medium"
+    plan: {start: 2026-11-03, end: 2026-11-06}
+    fact: {1: "Выполнено"}
+  - id: "0.5"
+    title: "Учёт: tracker.yaml, tracker.py, Excel по образцу, JOURNAL/ISSUES/DECISIONS/CHANGELOG/risks"
+    owner: "Sonnet medium"
+    review: "Sonnet medium (скрипт и вид Excel)"
+    plan: {start: 2026-11-03, end: 2026-11-06}
+    fact: {1: "Выполнено"}
+  - id: "0.6"
+    title: "Граф знаний: отдельный граф tau3-ng, чистка общего графа от дублей"
+    owner: "Оркестратор"
+    review: "Sonnet medium"
+    plan: {start: 2026-11-04, end: 2026-11-06}
+    fact: {1: "В работе"}
+  - id: "0.7"
+    title: "Ворота этапа 0; развилки Р-0, Р-6, Р-8"
+    owner: "Оркестратор"
+    review: "Opus high"
+    plan: {start: 2026-11-06, end: 2026-11-07}
+
+  - id: "1"
+    title: "Этап 1. Требования, математика, эталоны"
+    stage: true
+  - id: "1.0"
+    title: "Короткий набор NFR и веса критериев выбора стека (развилка Р-9, к 10.11)"
+    owner: "Оркестратор"
+    review: "Пользователь"
+    plan: {start: 2026-11-05, end: 2026-11-10}
+  - id: "1.1"
+    title: "Требования ISO 29148 (SRS.md) и «Паритет» на уровне поведения"
+    owner: "Sonnet high"
+    review: "Sonnet high + Opus (полнота)"
+    plan: {start: 2026-11-09, end: 2026-11-20}
+  - id: "1.2"
+    title: "Математические спецификации docs/math (b_scheme ... k_input_vrt), источники и допуски"
+    owner: "Opus high"
+    review: "Opus high (другой агент) + ВН-01"
+    plan: {start: 2026-11-06, end: 2026-11-20}
+  - id: "1.3"
+    title: "Политика допусков: иерархия эталонов, обусловленность, разрывные выходы"
+    owner: "Opus high"
+    review: "Opus high (другой агент)"
+    plan: {start: 2026-11-13, end: 2026-11-20}
+  - id: "1.4"
+    title: "Оракул Delphi: ветка oracle, выдача hex80, golden, 300+ вариантов, Control.tab, галерея"
+    owner: "Sonnet medium + Haiku low"
+    review: "Opus high"
+    plan: {start: 2026-11-09, end: 2026-11-27}
+  - id: "1.5"
+    title: "Независимый оракул высокой точности на mpmath (по учебникам)"
+    owner: "Sonnet high (отдельный автор)"
+    review: "Opus high + ВН-02"
+    plan: {start: 2026-11-12, end: 2026-11-27}
+  - id: "1.6"
+    title: "Сценарии UC по методичкам и аналитическим частям скиллов tau-lab-*/tau-dz-*"
+    owner: "Sonnet medium"
+    review: "Sonnet high"
+    plan: {start: 2026-11-16, end: 2026-11-24}
+  - id: "1.7"
+    title: "Перечень причуд оригинала: «исправить» или «повторить»; развилка Р-1"
+    owner: "Sonnet medium"
+    review: "Оркестратор"
+    plan: {start: 2026-11-12, end: 2026-11-20}
+  - id: "1.8"
+    title: "Ворота этапа 1: требования, «Паритет», спецификации, допуски и оракулы согласованы"
+    owner: "Оркестратор"
+    review: "Opus high"
+    plan: {start: 2026-11-23, end: 2026-11-27}
+
+  - id: "2"
+    title: "Этап 2. Технологии: сравнение, наброски, решение"
+    stage: true
+  - id: "2.1"
+    title: "Сравнение вариантов A-M по весам 1.0 (черновик ADR-0001), факты по первоисточникам"
+    owner: "Opus high"
+    review: "Sonnet high (проверка фактов по сети)"
+    plan: {start: 2026-11-10, end: 2026-11-16}
+  - id: "2.2"
+    title: "Мини-CI для набросков (Windows, Linux, macOS ночью)"
+    owner: "Sonnet medium"
+    review: "Haiku low"
+    plan: {start: 2026-11-10, end: 2026-11-13}
+  - id: "2.3"
+    title: "Замер ядра на финалистах против эталонов 1.4/1.5; одинаковые ли биты на трёх ОС"
+    owner: "Sonnet high"
+    review: "Opus high"
+    plan: {start: 2026-11-16, end: 2026-11-23}
+  - id: "2.4"
+    title: "Наброски на двух финалистах: окно, печать, PDF/SVG, HiDPI, формулы; замеры"
+    owner: "Sonnet high ×2 (worktree)"
+    review: "Sonnet high + UX"
+    plan: {start: 2026-11-16, end: 2026-11-26}
+  - id: "2.5"
+    title: "Развилки Р-2 (стек) и Р-3 (веб-версия) после набросков"
+    owner: "Пользователь"
+    review: "— (решение пользователя)"
+    plan: {start: 2026-11-27, end: 2026-11-27}
+  - id: "2.6"
+    title: "Ворота этапа 2: ADR-0001, окончательная лицензия (Р-6), эталонный случай и машина"
+    owner: "Оркестратор"
+    review: "Opus high"
+    plan: {start: 2026-11-23, end: 2026-11-27}
+
+  - id: "3"
+    title: "Этап 3. Дизайн"
+    stage: true
+  - id: "3.1"
+    title: "Разбор интерфейса оригинала и аналогов (MATLAB, Simulink, Xcos, OpenModelica, LabVIEW)"
+    owner: "Sonnet medium"
+    review: "Оркестратор"
+    plan: {start: 2026-11-17, end: 2026-11-20}
+  - id: "3.2"
+    title: "Информационная архитектура: карта окон, горячие клавиши, глоссарий"
+    owner: "Sonnet high"
+    review: "UX"
+    plan: {start: 2026-11-19, end: 2026-11-27}
+  - id: "3.3"
+    title: "Три концепции дизайна, макеты, запрос ВН-03; развилка Р-4"
+    owner: "Sonnet high"
+    review: "UX"
+    plan: {start: 2026-11-23, end: 2026-12-04}
+  - id: "3.4"
+    title: "Дизайн-система: темы, ч/б графики, шрифты, значки звеньев (ВН-04), WCAG 2.2 AA"
+    owner: "Sonnet high"
+    review: "UX + Opus"
+    plan: {start: 2026-11-30, end: 2026-12-11}
+  - id: "3.5"
+    title: "Кликабельный прототип, проверка с пользователем, правки"
+    owner: "Sonnet medium"
+    review: "Пользователь"
+    plan: {start: 2026-12-07, end: 2026-12-11}
+  - id: "3.6"
+    title: "Ворота этапа 3: концепция и дизайн-система утверждены"
+    owner: "Оркестратор"
+    review: "Opus high"
+    plan: {start: 2026-12-07, end: 2026-12-11}
+
+  - id: "4"
+    title: "Этап 4. Архитектура, каркас, сквозной срез"
+    stage: true
+  - id: "4.1"
+    title: "Архитектура (arc42 + C4): модули, фоновый счёт, Undo, проверка core для LINSYS/IMPULS/PHASPL"
+    owner: "Оркестратор"
+    review: "Opus high (другой агент)"
+    plan: {start: 2026-11-30, end: 2026-12-04}
+  - id: "4.2"
+    title: "Формат варианта v3: JSON Schema, миграции, чтение .vrt и JSON К2"
+    owner: "Sonnet high"
+    review: "Уровень 1"
+    plan: {start: 2026-12-03, end: 2026-12-11}
+  - id: "4.3"
+    title: "Каркас: workspace, линтеры, pre-commit, тесты (модульные, property, мутационные, UI, e2e)"
+    owner: "Sonnet medium"
+    review: "Sonnet high"
+    plan: {start: 2026-11-30, end: 2026-12-08}
+  - id: "4.4"
+    title: "Полный CI: Windows, Linux, macOS; ночные установщики"
+    owner: "Sonnet medium"
+    review: "Haiku low + Sonnet medium"
+    plan: {start: 2026-12-07, end: 2026-12-11}
+  - id: "4.5"
+    title: "Установщики и переносные сборки (zip, AppImage); подпись — развилка Р-7"
+    owner: "Sonnet medium"
+    review: "Sonnet medium"
+    plan: {start: 2026-12-10, end: 2026-12-16}
+  - id: "4.6"
+    title: "Сквозной срез к 18.12: схема -> ЛАЧХ, Найквист, процесс -> курсор -> PDF -> три ОС"
+    owner: "Sonnet high + оркестратор"
+    review: "Уровни 1 и 2"
+    plan: {start: 2026-12-07, end: 2026-12-18}
+  - id: "4.7"
+    title: "Ворота этапа 4 и развилка Р-5 (объём расширений в 1.0)"
+    owner: "Оркестратор"
+    review: "Opus high"
+    plan: {start: 2026-12-14, end: 2026-12-18}
+
+  - id: "5"
+    title: "Этап 5. Расчётное ядро"
+    stage: true
+  - id: "5.1"
+    title: "Основа: многочлены, комплексные числа, Паде до 10, double-double, сплайны, оси 1-2-5"
+    owner: "Opus high + Sonnet high"
+    review: "Уровень 1"
+    plan: {start: 2026-11-30, end: 2026-12-11}
+  - id: "5.2"
+    title: "Модель: звенья 1-21, разбор формулы, N 1-12, сигналы 1-10, буквы A-D, h/x, R<->N"
+    owner: "Sonnet high"
+    review: "Уровень 1"
+    plan: {start: 2026-12-07, end: 2026-12-18}
+  - id: "5.3"
+    title: "Устойчивость: Раус, Гурвиц, сетка A x B, D-разбиение"
+    owner: "Opus high + Sonnet high"
+    review: "Уровень 1"
+    plan: {start: 2026-12-14, end: 2026-12-25}
+  - id: "5.4"
+    title: "Корни: Аберт-Эрлих + Ньютон, Бэрстоу (совместимость), годограф по A и K"
+    owner: "Opus high"
+    review: "Уровень 1"
+    plan: {start: 2026-12-14, end: 2026-12-30}
+  - id: "5.5"
+    title: "Частотные: АЧХ, ЛАЧХ/ЛФЧХ, Найквист, Попов, Николс, запасы, e^(-j*w*tau)"
+    owner: "Sonnet high"
+    review: "Уровень 1"
+    plan: {start: 2026-12-21, end: 2026-12-30}
+  - id: "5.6"
+    title: "Процесс: РК4 и Дорман-Принс с событиями, запаздывание, нелинейности, портрет"
+    owner: "Opus high + Sonnet high"
+    review: "Уровень 1"
+    plan: {start: 2027-01-11, end: 2027-01-22}
+  - id: "5.7"
+    title: "Поиск минимума: A x B, I1, I2, tрег, многопоточность, отмена"
+    owner: "Sonnet high"
+    review: "Уровень 1"
+    plan: {start: 2027-01-11, end: 2027-01-22}
+  - id: "5.8"
+    title: "Показатели качества"
+    owner: "Sonnet medium"
+    review: "Уровень 1"
+    plan: {start: 2027-01-18, end: 2027-01-22}
+  - id: "5.9"
+    title: "Файлы и CLI: v3, .vrt, JSON К2, Control.tab, CSV, ключи CLI К2, Python-модуль"
+    owner: "Sonnet medium"
+    review: "Уровень 1"
+    plan: {start: 2027-01-18, end: 2027-01-27}
+  - id: "5.10"
+    title: "Ворота этапа 5: все эталоны, бюджеты скорости на трёх ОС"
+    owner: "Haiku low (замеры)"
+    review: "Opus xhigh"
+    plan: {start: 2027-01-25, end: 2027-01-29}
+
+  - id: "6"
+    title: "Этап 6. Интерфейс: перенос всех функций"
+    stage: true
+  - id: "6.1"
+    title: "Оболочка: меню, вкладки, файлы, автосохранение, переносной режим, настройки, темы, DPI"
+    owner: "Sonnet medium"
+    review: "Уровень 2"
+    plan: {start: 2026-12-14, end: 2026-12-30}
+  - id: "6.2"
+    title: "Редактор схемы: блоки, точки h/x, галерея звеньев, Undo/Redo, вставка, R<->N"
+    owner: "Sonnet high"
+    review: "Уровень 2"
+    plan: {start: 2027-01-11, end: 2027-01-29}
+  - id: "6.3"
+    title: "Компонент графика: оси, зум, курсор, легенда, экспорт PNG/SVG/PDF/CSV, печать"
+    owner: "Sonnet high"
+    review: "Уровень 2"
+    plan: {start: 2027-01-11, end: 2027-01-29}
+  - id: "6.4"
+    title: "Окна исследования и таблицы: годограф, Найквист, ЛАЧХ/ЛФЧХ, Раус, процесс, минимум, «Анализ»"
+    owner: "Sonnet medium ×2"
+    review: "Уровень 2"
+    plan: {start: 2027-01-25, end: 2027-02-10}
+  - id: "6.5"
+    title: "Передаточные функции (текст, LaTeX, Mathcad), ползунок параметра"
+    owner: "Sonnet medium"
+    review: "Уровень 2"
+    plan: {start: 2027-02-01, end: 2027-02-05}
+  - id: "6.6"
+    title: "Вывод: таблицы в файл и на принтер, рисунки, снимок окна, «Ширма», F2"
+    owner: "Sonnet medium"
+    review: "Уровень 2"
+    plan: {start: 2027-02-01, end: 2027-02-08}
+  - id: "6.7"
+    title: "Справка: 111 тем своими словами, F1 по контексту, подсказки, примеры"
+    owner: "Sonnet medium"
+    review: "Sonnet medium + Opus (термины)"
+    plan: {start: 2027-01-25, end: 2027-02-10}
+  - id: "6.8"
+    title: "Доступность и локализация (Р-8)"
+    owner: "Sonnet medium"
+    review: "UX"
+    plan: {start: 2027-02-01, end: 2027-02-10}
+  - id: "6.9"
+    title: "Ворота этапа 6: «Паритет» 100 % проверено, UC проходят; MVP к 12.02"
+    owner: "Haiku medium"
+    review: "Opus high"
+    plan: {start: 2027-02-09, end: 2027-02-12}
+
+  - id: "7"
+    title: "Этап 7. Расширения для удобства (объём - Р-5)"
+    stage: true
+  - id: "7.1"
+    title: "Буквы A-F на любом параметре (кандидат)"
+    owner: "Sonnet high"
+    review: "Уровни 1 и 2"
+    plan: {start: 2027-01-11, end: 2027-01-29}
+  - id: "7.2"
+    title: "Структуры: отключение звеньев, каскад, компенсация по возмущению, редактор (кандидат)"
+    owner: "Sonnet high (модель), Sonnet medium (UI)"
+    review: "Уровни 1 и 2"
+    plan: {start: 2027-02-01, end: 2027-02-19}
+  - id: "7.3"
+    title: "Режим лабораторных работ (кандидат)"
+    owner: "Sonnet medium"
+    review: "Уровень 2"
+    plan: {start: 2027-02-08, end: 2027-02-26}
+  - id: "7.4"
+    title: "Генератор отчёта DOCX/PDF по ГОСТ 7.32 (кандидат)"
+    owner: "Sonnet medium"
+    review: "Уровень 2 + ревьюер документов"
+    plan: {start: 2027-02-01, end: 2027-02-26}
+  - id: "7.5"
+    title: "«Показать вычисления»: многочлен, Раус, Гурвиц по шагам (кандидат)"
+    owner: "Sonnet high"
+    review: "Уровни 1 и 2"
+    plan: {start: 2027-01-25, end: 2027-02-12}
+  - id: "7.6"
+    title: "Сравнение вариантов, проекты (кандидат)"
+    owner: "Sonnet medium"
+    review: "Уровень 2"
+    plan: {start: 2027-02-15, end: 2027-03-05}
+  - id: "7.7"
+    title: "Веб-версия (кандидат; Р-3)"
+    owner: "Sonnet high"
+    review: "Уровень 2"
+    plan: {start: 2027-02-15, end: 2027-03-05}
+  - id: "7.8"
+    title: "Python API; перевод скиллов tau-lab-* на новую программу (кандидат)"
+    owner: "Sonnet medium"
+    review: "Уровень 1"
+    plan: {start: 2027-02-22, end: 2027-03-05}
+  - id: "7.9"
+    title: "Дискретные системы — отнести к будущему IMPULS"
+    owner: "Оркестратор (запись в бэклог ТАУ-3)"
+    review: "— (решается в Р-5)"
+    plan: {start: 2027-02-22, end: 2027-03-05}
+  - id: "7.10"
+    title: "Ворота этапа 7"
+    owner: "Оркестратор"
+    review: "Opus high"
+    plan: {start: 2027-03-01, end: 2027-03-05}
+
+  - id: "8"
+    title: "Этап 8. Испытания и доводка"
+    stage: true
+  - id: "8.1"
+    title: "План испытаний, ПМИ (ГОСТ 19.301)"
+    owner: "Sonnet medium"
+    review: "Sonnet medium"
+    plan: {start: 2027-02-08, end: 2027-02-19}
+  - id: "8.2"
+    title: "Итоговый паритет: все FR и регресс-тесты аудита против Delphi 1.1/К2"
+    owner: "Sonnet medium + Haiku low"
+    review: "Opus high"
+    plan: {start: 2027-02-15, end: 2027-03-05}
+  - id: "8.3"
+    title: "Три независимых расчёта (Delphi, ядро, mpmath) на 500+ вариантах, примеры методички"
+    owner: "Sonnet high"
+    review: "Opus high + ВН-05"
+    plan: {start: 2027-02-22, end: 2027-03-12}
+  - id: "8.4"
+    title: "Устойчивость: фаззинг формул и файлов, порядок 60, плохая обусловленность, отмена"
+    owner: "Sonnet high"
+    review: "Sonnet high"
+    plan: {start: 2027-02-22, end: 2027-03-12}
+  - id: "8.5"
+    title: "Испытания на трёх ОС, HiDPI, переносные сборки без прав администратора"
+    owner: "Sonnet medium"
+    review: "UX"
+    plan: {start: 2027-03-01, end: 2027-03-19}
+  - id: "8.6"
+    title: "Юзабилити с 3-5 студентами (после сессии, февраль)"
+    owner: "Пользователь + Sonnet medium"
+    review: "Оркестратор"
+    plan: {start: 2027-02-08, end: 2027-02-26}
+  - id: "8.7"
+    title: "Охота на ошибки: Opus + Sonnet + code-review high + ВН-06 -> исправления -> регресс"
+    owner: "Разные агенты"
+    review: "Opus high"
+    plan: {start: 2027-03-08, end: 2027-03-19}
+  - id: "8.8"
+    title: "Ворота этапа 8: 0 блокирующих и существенных замечаний, зелёное на трёх ОС"
+    owner: "—"
+    review: "Opus xhigh"
+    plan: {start: 2027-03-22, end: 2027-03-26}
+
+  - id: "9"
+    title: "Этап 9. Выпуск 1.0 и показ"
+    stage: true
+  - id: "9.1"
+    title: "Установщики и переносные сборки, GitHub Releases"
+    owner: "Sonnet medium"
+    review: "Haiku low"
+    plan: {start: 2027-03-22, end: 2027-04-02}
+  - id: "9.2"
+    title: "ЕСПД: ТЗ 19.201, описание 19.402, руководство 19.505, ПМИ 19.301, нормоконтроль"
+    owner: "Sonnet medium"
+    review: "Sonnet medium + Opus + ВН-07"
+    plan: {start: 2027-03-22, end: 2027-04-09}
+  - id: "9.3"
+    title: "Руководство пользователя, памятка"
+    owner: "Sonnet medium"
+    review: "UX"
+    plan: {start: 2027-03-29, end: 2027-04-09}
+  - id: "9.4"
+    title: "Материалы для кафедры: презентация, сценарий демонстрации, таблица, видео (ВН-08)"
+    owner: "Sonnet medium"
+    review: "Opus high"
+    plan: {start: 2027-03-29, end: 2027-04-12}
+  - id: "9.5"
+    title: "Приёмка и репетиция"
+    owner: "Оркестратор"
+    review: "Opus xhigh"
+    plan: {start: 2027-04-12, end: 2027-04-14}
+  - id: "9.6"
+    title: "v1.0.0, CHANGELOG, журнал, Excel"
+    owner: "Оркестратор"
+    review: "Haiku low (метка, CHANGELOG, ссылки)"
+    plan: {start: 2027-04-15, end: 2027-04-16}
+
+  - id: "10"
+    title: "Этап 10. Сопровождение"
+    stage: true
+  - id: "10.1"
+    title: "Приём замечаний через GitHub Issues (шаблоны) и лист Excel; серьёзность и срок реакции"
+    owner: "Оркестратор"
+    review: "Sonnet medium (разбор и классификация)"
+    plan: {start: 2027-04-19, end: 2027-05-02}
+  - id: "10.2"
+    title: "Исправление ошибки: сначала тест, потом правка, ревью, выпуск 1.0.x"
+    owner: "Sonnet medium / high по уровню"
+    review: "По уровню риска"
+    plan: {start: 2027-04-19, end: 2027-05-02}
+  - id: "10.3"
+    title: "Регулярно: граф, документы, Dependabot, CI"
+    owner: "Haiku low"
+    review: "Sonnet medium"
+    plan: {start: 2027-04-19, end: 2027-05-02}
+  - id: "10.4"
+    title: "Отзывы кафедры - в бэклог 1.x"
+    owner: "Оркестратор"
+    review: "Пользователь"
+    plan: {start: 2027-04-19, end: 2027-05-02}
+  - id: "10.5"
+    title: "Отдельный ROADMAP для всего ТАУ-3 на общем core"
+    owner: "Оркестратор"
+    review: "Opus high"
+    plan: {start: 2027-04-19, end: 2027-05-02}
+  - id: "10.6"
+    title: "Ворота сопровождения: обзор раз в квартал (замечания, зависимости, риски)"
+    owner: "Оркестратор"
+    review: "Opus high"
+    plan: {start: 2027-04-26, end: 2027-05-02}
+
+history:
+  - date: 2026-11-02
+    item: "0"
+    what: "Утверждён план модернизации (ROADMAP)"
+    who: "пользователь"
+  - date: 2026-11-02
+    item: "0.1"
+    what: "Коммит a61fae0 в work/control: пути после переноса проекта и исправление runclone.sh; метка v2-delphi-final на CONTROL_src d5ca350"
+    who: "Оркестратор (Opus 5.5)"
+    commit: "a61fae0 / метка v2-delphi-final"
+  - date: 2026-11-02
+    item: "0.3"
+    what: "Создан каркас репозитория tau3-ng (ещё не на GitHub)"
+    who: "Оркестратор (Opus 5.5)"
+  - date: 2026-11-02
+    item: "0.2"
+    what: "Переписаны мешающие документы Delphi-части; errata внесены"
+    who: "Sonnet 5.5 / medium; ревью Sonnet 5.5 / medium"
+    commit: "06d7aaf (CONTROL_src), 196fa72 (work\\control)"
+    rounds: 2
+  - date: 2026-11-02
+    item: "0.4"
+    what: "Правила, шаблоны, ROADMAP 1.1"
+    who: "Оркестратор (Opus 5.5); ревью Sonnet 5.5 / medium"
+    rounds: 2
+  - date: 2026-11-02
+    item: "0.5"
+    what: "Учёт: tracker.yaml → Excel по образцу (7 листов + скрытый снимок), команды build/sync/add/mark/log/review/review-status/decision/parity"
+    who: "Sonnet 5.5 / medium; ревью Sonnet 5.5 / medium"
+    rounds: 2
+  - date: 2026-11-02
+    item: "0.6"
+    what: "Общий граф REA: удалены дубли из CONTROL_src_help/rk45 (8332 → 4545 узлов), 12 документов переизвлечены; висячих рёбер нет"
+    who: "Sonnet 5.5 / medium (graphify); проверка — оркестратор"
+
+reviews:
+  - id: "R-0.2-1"
+    item: "0.2"
+    round: 1
+    severity: "существенное"
+    text: "«Перенесено» вместо «отменено» для golden2.txt и дискретных систем (PLAN.md, ROADMAP.md, HANDOFF.md)"
+    repro: "см. docs/reviews/RV-0.2-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.2-2"
+    item: "0.2"
+    round: 1
+    severity: "существенное"
+    text: "Erratum PutAt помечен внесённым, но i_output.md §4.2 не исправлен"
+    repro: "см. docs/reviews/RV-0.2-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-1"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "Команды учёта описаны неполно, нет команды для «Паритета», нет правил Excel"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-2"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "В ROADMAP нет раздела «Документация» и критериев готовности этапа 0"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-3"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "Подэтапы 0.2–0.6 пересказаны с потерями (память, шаблон журнала, детали 0.6)"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-4"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "«Регресс-тест на каждую ошибку A0–D4» невыполним для C и D"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-5"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "Не у всех подэтапов ревьюер, не у всех этапов ворота"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-6"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "DoR неисполним для ранних подэтапов, нет условия о блокирующих развилках"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-7"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "DoD «граф обновлён» противоречит правилу обновлять граф по документам на воротах"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-8"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "Правило доказательства (тест/воспроизведение) неприменимо к документам"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-9"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "ID отчёта ревью совпадает с ID замечания"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-10"
+    item: "0.4"
+    round: 1
+    severity: "существенное"
+    text: "Глоссарий: v и x описаны верно только для схемы «R»"
+    repro: "см. docs/reviews/RV-0.4-1.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.4-27"
+    item: "0.4"
+    round: 2
+    severity: "существенное"
+    text: "ROADMAP изменён после утверждения без новой версии и записи в журнале"
+    repro: "см. docs/reviews/RV-0.4-2.md"
+    by: "Ревьюер документов (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.5-1"
+    item: "0.5"
+    round: 1
+    severity: "существенное"
+    text: "Команды без sync стирают комментарии пользователя в Excel"
+    repro: "см. docs/reviews/RV-0.5-1.md"
+    by: "Ревьюер (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.5-2"
+    item: "0.5"
+    round: 1
+    severity: "существенное"
+    text: "sync затирает правку YAML устаревшим текстом из Excel"
+    repro: "см. docs/reviews/RV-0.5-1.md"
+    by: "Ревьюер (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.5-3"
+    item: "0.5"
+    round: 1
+    severity: "существенное"
+    text: "Развилки Р-2 и Р-3 слиты в одну строку"
+    repro: "см. docs/reviews/RV-0.5-1.md"
+    by: "Ревьюер (Sonnet 5.5 / medium)"
+    status: "исправлено"
+  - id: "R-0.5-19"
+    item: "0.5"
+    round: 2
+    severity: "незначительное"
+    text: "Испорченный или пустой xlsx блокирует все команды, включая build"
+    repro: "см. docs/reviews/RV-0.5-2.md"
+    by: "Ревьюер (Sonnet 5.5 / medium)"
+    status: "отложено"
+    comment: "перенесено в docs/ISSUES.md"
+  - id: "R-0.5-20"
+    item: "0.5"
+    round: 2
+    severity: "незначительное"
+    text: "Заголовки печати не повторяются на 2-й странице «Графика» (проверить в предпросмотре)"
+    repro: "см. docs/reviews/RV-0.5-2.md"
+    by: "Ревьюер (Sonnet 5.5 / medium)"
+    status: "отложено"
+    comment: "перенесено в docs/ISSUES.md"
+  - id: "R-0.5-21"
+    item: "0.5"
+    round: 2
+    severity: "незначительное"
+    text: "Шапка листа «Паритет» обрезана"
+    repro: "см. docs/reviews/RV-0.5-2.md"
+    by: "Ревьюер (Sonnet 5.5 / medium)"
+    status: "отложено"
+    comment: "перенесено в docs/ISSUES.md"
+  - id: "R-0.5-22"
+    item: "0.5"
+    round: 2
+    severity: "незначительное"
+    text: "Ошибки argparse дают код 2, как и занятый файл"
+    repro: "см. docs/reviews/RV-0.5-2.md"
+    by: "Ревьюер (Sonnet 5.5 / medium)"
+    status: "отложено"
+    comment: "перенесено в docs/ISSUES.md"
+  - id: "R-0.5-23"
+    item: "0.5"
+    round: 2
+    severity: "незначительное"
+    text: "Факт кончается воскресеньем недели: «Сроки» показывают +3 дня для 0.2"
+    repro: "см. docs/reviews/RV-0.5-2.md"
+    by: "Ревьюер (Sonnet 5.5 / medium)"
+    status: "отложено"
+    comment: "перенесено в docs/ISSUES.md"
+
+decisions:
+  - id: "Р-0"
+    question: "Название продукта и репозитория"
+    options: "1) «ТАУ-3 NG»; 2) «ТАУ-3М»; 3) «ТАУ-3 2027»; 4) своё название"
+    recommendation: "«ТАУ-3 NG», модуль CONTROL, репозиторий tau3-ng"
+    deadline: 2026-11-07
+    default: "Берём рекомендацию, переименовать можно позже"
+  - id: "Р-1"
+    question: "Причуды оригинала: исправлять или повторять"
+    options: "Считать правильно (+ режим совместимости 1.1) / повторять всё как в оригинале"
+    recommendation: "Считать правильно; методы 1.1 — в режиме совместимости"
+    deadline: 2026-11-20
+    default: "Ждём ответа"
+  - id: "Р-2"
+    question: "Стек (язык, UI, графики)"
+    options: "Варианты A–M из ROADMAP, этап 2 (A — Rust + Tauri, B — C++/Qt, C — Rust-ядро + Qt и др.)"
+    recommendation: "Решаем после набросков; сейчас ожидаю A — Rust + Tauri"
+    deadline: 2026-11-27
+    default: "Ждём ответа (блокирует этапы 4–6)"
+  - id: "Р-3"
+    question: "Веб-версия"
+    options: "В 1.0 / в 1.x / не делать"
+    recommendation: "Да, в 1.x (ядро в WASM)"
+    deadline: 2026-11-27
+    default: "Ждём ответа"
+  - id: "Р-4"
+    question: "Дизайн-концепция"
+    options: "«Инженерная классика» / «Современная рабочая среда» / «Учебная пошаговая»"
+    recommendation: "Решаем после макетов"
+    deadline: 2026-12-04
+    default: "Ждём ответа"
+  - id: "Р-5"
+    question: "Какие расширения этапа 7 войдут в 1.0"
+    options: "Кандидаты 7.1–7.9"
+    recommendation: "7.1, 7.4, 7.5"
+    deadline: 2026-12-18
+    default: "Берём рекомендацию"
+  - id: "Р-6"
+    question: "Лицензия публичного репозитория и авторство. Окончательно после Р-2"
+    options: "1) MIT или Apache-2.0; 2) GPL-3.0; 3) без открытой лицензии, репозиторий публичный"
+    recommendation: "Своя открытая лицензия на свой код, в README и «О программе» — ссылка на авторов ТАУ-3, справка своими словами"
+    deadline: 2026-11-07
+    default: "Репозиторий не публикуем"
+  - id: "Р-7"
+    question: "Подпись установщиков"
+    options: "С подписью (Apple Developer, сертификат Windows) / без подписи"
+    recommendation: "Без подписи: инструкция по установке и переносные сборки"
+    deadline: 2026-12-11
+    default: "Берём рекомендацию"
+  - id: "Р-8"
+    question: "Языки интерфейса"
+    options: "Только русский / русский + английский сразу"
+    recommendation: "Русский. Все строки сразу через локализацию, английский — в 1.x"
+    deadline: 2026-11-07
+    default: "Берём рекомендацию"
+  - id: "Р-9"
+    question: "Веса критериев выбора стека (подэтап 1.0)"
+    options: "Таблица весов (скорость, точность, одинаковые числа на всех ОС, печать, вид, установка и др.)"
+    recommendation: "Таблицу весов оркестратор предложит в подэтапе 1.0"
+    deadline: 2026-11-10
+    default: "Ждём ответа"
+
+parity: []
+
+roles:
+  - role: "Оркестратор, архитектор"
+    model: "Opus 5.5, основная сессия"
+    task: "Решения, ADR, задания, приёмка, коммиты, учёт, граф"
+  - role: "Аналитик требований"
+    model: "Sonnet 5.5 / high"
+    task: "Требования FR/NFR, паритет по поведению, сценарии UC"
+  - role: "Математик-методист"
+    model: "Opus 5.5 / high"
+    task: "Мат. спецификации, политика допусков, самые трудные численные места"
+  - role: "Автор независимого оракула"
+    model: "Sonnet 5.5 / high (другой агент, по учебникам)"
+    task: "Эталон высокой точности на mpmath"
+  - role: "Разработчик ядра"
+    model: "Sonnet 5.5 / high, рутина - medium"
+    task: "Перенос и улучшение расчётов"
+  - role: "Разработчик интерфейса"
+    model: "Sonnet 5.5 / medium; график и редактор схемы - high"
+    task: "Окна, оболочка"
+  - role: "Дизайнер UI/UX"
+    model: "Sonnet 5.5 / high + внешние нейросети"
+    task: "Концепции, макеты, дизайн-система"
+  - role: "Инженер тестов"
+    model: "Sonnet 5.5 / medium"
+    task: "Тесты, фаззинг, разностные сравнения"
+  - role: "DevOps"
+    model: "Sonnet 5.5 / medium"
+    task: "CI, установщики"
+  - role: "Технический писатель"
+    model: "Sonnet 5.5 / medium"
+    task: "Руководства, справка, ЕСПД (скилл tech-docs-gost)"
+  - role: "Исполнитель прогонов"
+    model: "Haiku 5.5 / low"
+    task: "Сборка, тесты, логи CI, сводки отличий"
+  - role: "Поиск"
+    model: "Haiku 5.5 / low-medium (Explore)"
+    task: "Delphi-код, декомпилят, заметки, новый код"
+  - role: "Ревьюер кода"
+    model: "Sonnet 5.5 / high"
+    task: "Уровни 1-2"
+  - role: "Ревьюер расчётов"
+    model: "Opus 5.5 / high"
+    task: "Уровень 1"
+  - role: "Ревьюер UX"
+    model: "Sonnet 5.5 / medium"
+    task: "Подэтапы с интерфейсом, по снимкам"
+  - role: "Ревьюер документов"
+    model: "Sonnet 5.5 / medium + lint_doc.py"
+    task: "Документы, ЕСПД"
+  - role: "Приёмка этапа"
+    model: "Opus 5.5 / high; ворота 5.10, 8.8 и 9.5 - xhigh"
+    task: "Ворота"
+
+external_requests:
+  - id: "ВН-01"
+    item: "1.2"
+    what: "Проверка математических спецификаций"
+  - id: "ВН-02"
+    item: "1.5"
+    what: "Проверка независимого оракула"
+  - id: "ВН-03"
+    item: "3.3"
+    what: "Макеты (Figma / v0 / Midjourney)"
+  - id: "ВН-04"
+    item: "3.4"
+    what: "Значки звеньев, логотип"
+  - id: "ВН-05"
+    item: "8.3"
+    what: "Независимые расчёты"
+  - id: "ВН-06"
+    item: "8.7"
+    what: "Охота на ошибки (внешняя модель)"
+  - id: "ВН-07"
+    item: "9.2"
+    what: "Вычитка ЕСПД"
+  - id: "ВН-08"
+    item: "9.4"
+    what: "Презентация, оформление"
