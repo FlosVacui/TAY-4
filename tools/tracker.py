@@ -1135,8 +1135,16 @@ def cmd_review(args):
     pref = f"R-{args.item}-"
     nums = [int(r["id"][len(pref):]) for r in data["reviews"]
             if str(r.get("id", "")).startswith(pref) and r["id"][len(pref):].isdigit()]
-    n = max(nums, default=0) + 1
-    rid = f"R-{args.item}-{n}"
+    if args.id:
+        # второй ревьюер раунда нумерует замечания со 101 (PROCESS, «Обозначения»)
+        rid = args.id
+        if not (rid.startswith(pref) and rid[len(pref):].isdigit()):
+            raise TrackerError(f"ID замечания должен иметь вид {pref}<n>")
+        if any(r.get("id") == rid for r in data["reviews"]):
+            raise TrackerError(f"Замечание {rid} уже есть")
+    else:
+        n = max((x for x in nums if x < 101), default=0) + 1
+        rid = f"R-{args.item}-{n}"
     rec = {"id": rid, "item": args.item, "round": args.round, "severity": args.severity, "text": args.text,
            "status": "открыто"}
     if args.repro:
@@ -1261,6 +1269,7 @@ def make_parser():
     s.add_argument("--text", required=True)
     s.add_argument("--repro", help="воспроизведение")
     s.add_argument("--by", help="кто нашёл")
+    s.add_argument("--id", help="свой номер замечания, напр. R-1.1-101 (второй ревьюер раунда)")
     s.set_defaults(fn=cmd_review)
 
     s = sub.add_parser("review-status", parents=[chg], help="сменить статус замечания")
